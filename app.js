@@ -25,8 +25,8 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             }
         });
-    } else if (req.method.toUpperCase() === 'GET' && req.url === '/style.css') {
-        fs.readFile('css/style.css', (err, data) => {
+    } else if (req.method.toUpperCase() === 'GET' && req.url === '/styles.css') {
+        fs.readFile('css/styles.css', (err, data) => {
             if (err) {
                 console.log('Erro ao buscar o "style.css"');
                 res.statusCode = 500;
@@ -55,7 +55,39 @@ const server = http.createServer((req, res) => {
             let email = formData.email;
             let password = formData.senha;
 
+            let error = null;
+
             // Validação
+            if (email !== correctEmail) {
+                error = 'email';
+            } else if (password !== correctPassword) {
+                error = 'password';
+            } else if (email === correctEmail && password === correctPassword) {
+                error = null;
+            }
+
+            // Retorno
+            if (error) {
+                // Error
+                fs.readFile('index.html', (err, data) => {
+                    if (err) {
+                        console.log(err);
+                        console.log('Erro ao carregar "index.html"');
+
+                        res.statusCode = 404;
+                        res.end('Erro interno do servidor');
+                    } else {
+                        // Define o cabeçalho HTTP
+                        res.setHeader('Content-Type', 'text/html');
+
+                        console.log('index.html');
+                        res.statusCode = 200;
+                        res.end(data);
+                    }
+                })
+            } else {
+                // Sucessful
+            }
         });
     }
 });
